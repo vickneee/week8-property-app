@@ -1,62 +1,87 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import {useState} from 'react';
+import {useNavigate} from 'react-router-dom';
 import {toast} from 'react-toastify';
+import useField from '../hooks/useField'; // Import the useField hook
 
-// eslint-disable-next-line react/prop-types
 const AddPropertyPage = () => {
-  const [title, setTitle] = useState("");
-  const [type, setType] = useState("Apartment");
-  const [description, setDescription] = useState("");
-  const [price, setPrice] = useState();
-  const [locationAddress, setLocationAddress] = useState("");
-  const [locationCity, setLocationCity] = useState("");
-  const [locationState, setLocationState] = useState("");
-  const [locationZipCode, setLocationZipCode] = useState("");
-  const [squareFeet, setSquareFeet] = useState();
-  const [yearBuilt, setYearBuilt] = useState();
-  
   const navigate = useNavigate();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  
+  // Using the useField hook for each field
+  const title = useField('text', '');
+  const type = useField('select', 'Apartment');
+  const description = useField('textarea', '');
+  const price = useField('number', '');
+  const locationAddress = useField('text', '');
+  const locationCity = useField('text', '');
+  const locationState = useField('text', '');
+  const locationZipCode = useField('text', '');
+  const squareFeet = useField('number', '');
+  const yearBuilt = useField('number', '');
+  
+  const clearAllFields = () => {
+    title.clear();
+    type.clear();
+    description.clear();
+    price.clear();
+    locationAddress.clear();
+    locationCity.clear();
+    locationState.clear();
+    locationZipCode.clear();
+    squareFeet.clear();
+    yearBuilt.clear();
+  };
   
   const addProperty = async (newProperty) => {
     try {
-      const res = await fetch("/api/properties", {
-        method: "POST",
+      const res = await fetch('/api/properties', {
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify(newProperty),
       });
       if (!res.ok) {
-        throw new Error("Failed to add property");
+        const errorData = await res.json();
+        throw new Error(errorData.message || 'Failed to add property');
       }
+      
+      return true;
     } catch (error) {
       console.error(error);
+      toast.error(error.message ||
+        'Failed to add property. Check console for more info.');
       return false;
+    } finally {
+      setIsSubmitting(false);
     }
-    return true;
   };
   
-  const submitForm = (e) => {
+  const submitForm = async (e) => {
     e.preventDefault();
+    setIsSubmitting(true);
     
     const newProperty = {
-      title,
-      type,
-      description,
-      price,
+      title: title.value,
+      type: type.value,
+      description: description.value,
+      price: Number(price.value),
       location: {
-        address: locationAddress,
-        city: locationCity,
-        state: locationState,
-        zipCode: locationZipCode,
+        address: locationAddress.value,
+        city: locationCity.value,
+        state: locationState.value,
+        zipCode: locationZipCode.value,
       },
-      squareFeet,
-      yearBuilt,
+      squareFeet: Number(squareFeet.value),
+      yearBuilt: Number(yearBuilt.value),
     };
     
-    addProperty(newProperty);
-    toast.success('Property added successfully');
-    navigate("/");
+    const success = await addProperty(newProperty);
+    if (success) {
+      toast.success('Property added successfully');
+      clearAllFields();
+      navigate('/');
+    }
   };
   
   return (
@@ -64,74 +89,32 @@ const AddPropertyPage = () => {
       <h2>Add a New Property</h2>
       <form onSubmit={submitForm}>
         <label>Property title:</label>
-        <input
-          type="text"
-          required
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-        />
+        <input {...title} required/>
         <label>Property type:</label>
-        <select value={type} onChange={(e) => setType(e.target.value)}>
+        <select {...type}>
           <option value="Apartment">Apartment</option>
           <option value="House">House</option>
           <option value="Commercial">Commercial</option>
         </select>
-        
         <label>Property Description:</label>
-        <textarea
-          required
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}></textarea>
+        <textarea {...description} required/>
         <label>Price:</label>
-        <input
-          type="number"
-          required
-          value={price}
-          onChange={(e) => setPrice(e.target.value)}
-        />
+        <input {...price} required/>
         <label>Location Address:</label>
-        <input
-          type="text"
-          required
-          value={locationAddress}
-          onChange={(e) => setLocationAddress(e.target.value)}
-        />
+        <input {...locationAddress} required/>
         <label>Location City:</label>
-        <input
-          type="text"
-          required
-          value={locationCity}
-          onChange={(e) => setLocationCity(e.target.value)}
-        />
+        <input {...locationCity} required/>
         <label>Location State:</label>
-        <input
-          type="text"
-          required
-          value={locationState}
-          onChange={(e) => setLocationState(e.target.value)}
-        />
+        <input {...locationState} required/>
         <label>Location Zip Code:</label>
-        <input
-          type="text"
-          required
-          value={locationZipCode}
-          onChange={(e) => setLocationZipCode(e.target.value)}
-        />
+        <input {...locationZipCode} required/>
         <label>Square Feet:</label>
-        <input
-          type="number"
-          required
-          value={squareFeet}
-          onChange={(e) => setSquareFeet(e.target.value)}
-        />
+        <input {...squareFeet} required/>
         <label>Year Built:</label>
-        <input
-          type="number"
-          required
-          value={yearBuilt}
-          onChange={(e) => setYearBuilt(e.target.value)}
-        />
-        <button>Add Property</button>
+        <input {...yearBuilt} required/>
+        <button type="submit" disabled={isSubmitting}>
+          {isSubmitting ? 'Submitting...' : 'Add Property'}
+        </button>
       </form>
     </div>
   );
