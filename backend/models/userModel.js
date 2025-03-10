@@ -9,7 +9,7 @@ const userSchema = new Schema(
     phone_number: { type: String, required: true }, // Contact phone number
     profilePicture: { type: String, required: false }, // URL of the user's profile picture
     gender: { type: String, required: true }, // Gender of the user
-    date_of_birth: { type: Date, required: true }, // User's birth date
+    date_of_birth: { type: Date, required: true }, // User's birthdate
     role: { type: String, required: true, enum: ['admin', 'user', 'moderator'], default: 'user' }, // User role
     address: {
       street: { type: String, required: true }, // Street address
