@@ -1,12 +1,14 @@
 # Self-Assessment for Frontend Code of AddPropertyPage.jsx
 
-Improvements and Refactoring
+## Improvements and Refactoring
+
 Here's a breakdown of the improvements we'll make:
-Custom useField Hook: We'll create a reusable hook to handle the state, change events, and validation for each form
-field.
-Clearer Form Submission: Improve the feedback loop after submitting the form.
-Code style improvements: Code style can be improved a little bit.
-Simplify the submitForm: Logic can be simplified.
+- Custom useField Hook: We'll create a reusable hook to handle the state, change events, and validation for each form field.
+- Clearer Form Submission: Improve the feedback loop after submitting the form.
+- Code style improvements: Code style can be improved a little bit.
+- Simplify the submitForm: Logic can be simplified.
+
+Code in the beginning:
 
 ```javascript
 import {useState} from "react";
@@ -151,14 +153,6 @@ const AddPropertyPage = () => {
 export default AddPropertyPage;
 
 ```
-
-## Improvements and Refactoring
-
-Here's a breakdown of the improvements we'll make:
-- Custom useField Hook: We'll create a reusable hook to handle the state, change events, and validation for each form field.
-- Clearer Form Submission: Improve the feedback loop after submitting the form.
-- Code style improvements: Code style can be improved a little bit.
-- Simplify the submitForm: Logic can be simplified.
 
 ### 1. Create the useField Hook (create new file useField.js)
 
