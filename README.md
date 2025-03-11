@@ -1,6 +1,6 @@
 # MERN Stack Property App
 
-Metropolia UAS Exam practice repository. Property App.
+Metropolia UAS Week 8 Exam practice repository. Property App. 
 
 ---
 
