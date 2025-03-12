@@ -1,5 +1,6 @@
 import { useParams, useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
+import AuthContext from "../context/AuthContext";
 import { Link } from "react-router-dom";
 import {toast} from 'react-toastify';
 
@@ -9,18 +10,27 @@ const PropertyPage = () => {
   const [property, setProperty] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  
+  const { token } = useContext(AuthContext);
 
   const deleteProperty = async (id) => {
     try {
       const res = await fetch(`/api/properties/${id}`, {
         method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       });
       if (!res.ok) {
         throw new Error("Failed to delete property");
       }
+      return true; // Return true if successful
     } catch (error) {
       console.error("Error deleting property!", error);
       toast.error("Error deleting property!");
+      return false; // Return false if failed
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -50,9 +60,11 @@ const PropertyPage = () => {
     );
     if (!confirm) return;
 
-    deleteProperty(propertyId);
+    const deletionSuccess = deleteProperty(propertyId);
+    if (!deletionSuccess) {
     toast.success("Property Deleted Successfully!");
     navigate("/");
+    }
   };
 
   return (

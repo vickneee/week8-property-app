@@ -2,11 +2,14 @@ import useField from "../hooks/useField";
 import useSignup from "../hooks/useSignup";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useContext } from "react";
+import AuthContext from "../context/AuthContext";
 import { toast } from "react-toastify";
 
 // eslint-disable-next-line react/prop-types
-const SignupPage = ({setIsAuthenticated}) => {
+const SignupPage = () => {
   const navigate = useNavigate();
+  const { setUser } = useContext(AuthContext); // Access Auth
   const name = useField("text");
   const username = useField("text");
   const password = useField("password");
@@ -40,10 +43,10 @@ const SignupPage = ({setIsAuthenticated}) => {
       return;
     }
     
-    setValidationError(null); // Clear validation error
+    setValidationError(null);
     
     try {
-      const user = await signup({
+      const response = await signup({
         name: name.value,
         username: username.value,
         password: password.value,
@@ -59,11 +62,25 @@ const SignupPage = ({setIsAuthenticated}) => {
           zipCode: addressZipCode.value,
         },
       });
-      if (user) { // Check if user exists instead of error
-        console.log('Signup successful!');
+      
+      console.log('Signup Response:', response);
+      
+      if (response && response.username && response.token) { // Correct check
+        console.log('Signup successful!', response);
         toast.success('Signup successful!');
-        setIsAuthenticated(true);
-        navigate('/');
+        setUser(response); // Pass the entire response to setUser
+        setTimeout(() => {
+          navigate('/');
+        }, 500);
+      } else if (response && response.error) {
+        console.error('Signup failed:', response.error);
+        toast.error(response.error);
+      } else if (response) {
+        console.error('Signup failed: Unexpected response structure', response);
+        toast.error('Signup failed: Unexpected response structure');
+      } else {
+        console.error('Signup failed: No response received');
+        toast.error('Signup failed: No response received');
       }
     } catch (error) {
       console.error('Signup failed:', error.message);

@@ -1,5 +1,6 @@
-import {useState, useEffect} from 'react';
+import {useState, useEffect, useContext} from 'react';
 import {useParams, useNavigate} from 'react-router-dom';
+import AuthContext from "../context/AuthContext";
 import {toast} from 'react-toastify';
 
 const EditPropertyPage = () => {
@@ -21,6 +22,7 @@ const EditPropertyPage = () => {
   const [yearBuilt, setYearBuilt] = useState('');
   
   const navigate = useNavigate();
+  const {token} = useContext(AuthContext);
   
   const updateProperty = async (property) => {
     try {
@@ -28,6 +30,7 @@ const EditPropertyPage = () => {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(property),
       });

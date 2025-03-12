@@ -1,28 +1,42 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
+import AuthContext from "../context/AuthContext";
 
 export default function useLogin(url) {
-    const [error, setError] = useState(null);
-    const [isLoading, setIsLoading] = useState(null);
-    const login = async (object) => {
-        setIsLoading(true);
-        setError(null);
-        const response = await fetch(url, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(object),
-        });
-        const user = await response.json();
+  const [error, setError] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const { setUser } = useContext(AuthContext);
+  
+  const login = async (object) => {
+    setIsLoading(true);
+    setError(null);
     
-        if (!response.ok) {
-          setError(user.error);
-          setIsLoading(false);
-          return error;
-        }
-    
-        // localStorage.setItem("token", user.token);
-        localStorage.setItem("user", JSON.stringify(user));
+    try {
+      const response = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(object),
+      });
+      
+      const responseData = await response.json();
+      
+      if (!response.ok) {
+        console.error("Login failed:", responseData.error);
+        setError(responseData.error);
         setIsLoading(false);
-      };
-
-      return { login, isLoading, error };
+        return responseData;
+      }
+      
+      setUser(responseData); // Use setUser from context
+      localStorage.setItem("user", JSON.stringify(responseData)); //Keep localStorage as a fallback.
+      setIsLoading(false);
+      return responseData;
+    } catch (err) {
+      console.error("Login failed:", err);
+      setError("An unexpected error occurred.");
+      setIsLoading(false);
+      return { error: "An unexpected error occurred." };
+    }
+  };
+  
+  return { login, isLoading, error };
 }

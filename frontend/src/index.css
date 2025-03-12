@@ -164,3 +164,18 @@
 .margin-b {
   margin-bottom: 20px;
 }
+
+.username {
+  color: #f1356d;
+  font-weight: bold;
+  margin: 0 10px;
+}
+
+.btn-add-property {
+  background: #f1356d;
+  color: #fff;
+  border: 0;
+  padding: 8px;
+  border-radius: 8px;
+  cursor: pointer;
+}
