@@ -22,6 +22,7 @@ const EditPropertyPage = () => {
   const [yearBuilt, setYearBuilt] = useState('');
   
   const navigate = useNavigate();
+  
   const {token} = useContext(AuthContext);
   
   const updateProperty = async (property) => {
