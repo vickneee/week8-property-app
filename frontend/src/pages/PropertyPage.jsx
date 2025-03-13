@@ -5,11 +5,12 @@ import { Link } from "react-router-dom";
 import {toast} from 'react-toastify';
 
 const PropertyPage = () => {
-  const navigate = useNavigate();
   const { id } = useParams();
   const [property, setProperty] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  const navigate = useNavigate();
   
   const { token } = useContext(AuthContext);
 
