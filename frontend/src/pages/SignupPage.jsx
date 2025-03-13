@@ -123,7 +123,7 @@ const SignupPage = () => {
         <input{...addressState}/>
         <label>Address Zip Code:</label>
         <input{...addressZipCode}/>
-        <button>Sign up</button>
+        <button>Sign Up</button>
       </form>
     </div>
   );
