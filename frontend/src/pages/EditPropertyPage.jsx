@@ -4,6 +4,7 @@ import AuthContext from "../context/AuthContext";
 import {toast} from 'react-toastify';
 
 const EditPropertyPage = () => {
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [property, setProperty] = useState(null); // Initialize property state
   const [loading, setLoading] = useState(true); // Loading state
   const [error, setError] = useState(null); // Error state
@@ -35,12 +36,18 @@ const EditPropertyPage = () => {
         },
         body: JSON.stringify(property),
       });
-      if (!res.ok)
-        throw new Error('Failed to update property');
-      return res.ok;
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.message || 'Failed to add property');
+      }
+      return true;
     } catch (error) {
-      console.error('Error updating property:', error);
+      console.error(error);
+      toast.error(error.message ||
+        'Failed to add property. Check console for more info.');
       return false;
+    } finally {
+      setIsSubmitting(false);
     }
   };
   
@@ -80,6 +87,8 @@ const EditPropertyPage = () => {
   // Handle form submission
   const submitForm = async (e) => {
     e.preventDefault();
+
+    setIsSubmitting(true);
     
     const updatedProperty = {
       id,
